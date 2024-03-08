@@ -1,10 +1,12 @@
 const { test, expect } = require('@playwright/test');
 const baseUrl = 'http://localhost:3000';
+const email = 'peter@abv.bg';
+const password = '123456';
 
 async function login(page) {
     await page.click('a[href="/login"]')
-    await page.fill('#email', 'peter@abv.bg');
-    await page.fill('#password', '123456');
+    await page.fill('#email', email);
+    await page.fill('#password', password);
     await page.click('input[type="submit"]');
 }
 
@@ -82,6 +84,34 @@ test('Login with valid credentials', async ({ page }) => {
 
 test('Login with empty input fields', async ({ page }) => {
     await page.goto(baseUrl + '/login');
+    await page.click('input[type="submit"]');
+
+    page.on('dialog', async dialog => {
+        expect(dialog.type()).toContain('All fields are required!');
+        await dialog.accept();
+    });
+
+    await page.$('a[href="/login"]');
+    expect(page.url()).toBe(baseUrl + '/login');
+});
+
+test('Login with empty password', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+    await page.fill('#email', email);
+    await page.click('input[type="submit"]');
+
+    page.on('dialog', async dialog => {
+        expect(dialog.type()).toContain('All fields are required!');
+        await dialog.accept();
+    });
+
+    await page.$('a[href="/login"]');
+    expect(page.url()).toBe(baseUrl + '/login');
+});
+
+test('Login with empty email', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+    await page.fill('#password', password);
     await page.click('input[type="submit"]');
 
     page.on('dialog', async dialog => {
