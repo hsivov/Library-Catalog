@@ -4,10 +4,8 @@ const email = 'peter@abv.bg';
 const password = '123456';
 
 async function login(page) {
-    await page.click('a[href="/login"]')
     await page.fill('#email', email);
     await page.fill('#password', password);
-    await page.click('input[type="submit"]');
 }
 
 test('Verify "All Books" link is visible', async ({ page }) => {
@@ -35,8 +33,9 @@ test('Verify Register button is visible', async ({ page }) => {
 });
 
 test('Verify "All Books" link is visible after user login', async ({ page }) => {
-    await page.goto(baseUrl);
+    await page.goto(baseUrl + '/login');
     await login(page);
+    await page.click('input[type="submit"]');
 
     const allBooksLink = await page.$('a[href="/catalog"]');
     const isAllBooksLinkVisible = await allBooksLink.isVisible();
@@ -47,8 +46,9 @@ test('Verify "All Books" link is visible after user login', async ({ page }) => 
 });
 
 test('Verify "My Books" link is visible', async ({ page }) => {
-    await page.goto(baseUrl);
+    await page.goto(baseUrl + '/login');
     await login(page);
+    await page.click('input[type="submit"]');
     await page.waitForSelector('nav.navbar');
     const myBooksButton = await page.$('a[href="/profile"]');
     const isMyBooksButtonVisible = await myBooksButton.isVisible();
@@ -56,8 +56,9 @@ test('Verify "My Books" link is visible', async ({ page }) => {
 });
 
 test('Verify "Add Book" link is visible', async ({ page }) => {
-    await page.goto(baseUrl);
+    await page.goto(baseUrl + '/login');
     await login(page);
+    await page.click('input[type="submit"]');
     await page.waitForSelector('nav.navbar');
     const addBookButton = await page.$('a[href="/create"]');
     const isAddBookButtonVisible = await addBookButton.isVisible();
@@ -66,8 +67,9 @@ test('Verify "Add Book" link is visible', async ({ page }) => {
 
 
 test('Verify that user email address is visible', async ({ page }) => {
-    await page.goto(baseUrl);
+    await page.goto(baseUrl + '/login');
     await login(page);
+    await page.click('input[type="submit"]');
     await page.waitForSelector('nav.navbar');
     const emailAddress = await page.$('#user > span:nth-child(1)');
     const isEmailAddressVisible = await emailAddress.isVisible();
@@ -75,8 +77,9 @@ test('Verify that user email address is visible', async ({ page }) => {
 });
 
 test('Login with valid credentials', async ({ page }) => {
-    await page.goto(baseUrl);
+    await page.goto(baseUrl + '/login');
     await login(page);
+    await page.click('input[type="submit"]');
 
     await page.$('a[href="/catalog"]');
     expect(page.url()).toBe(baseUrl + '/catalog');
@@ -168,3 +171,28 @@ test('Register with different passwords', async ({ page }) => {
     expect(page.url()).toBe(baseUrl + '/register');
     
 });
+
+test('Add book with correct data', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+
+    await login(page);
+
+    await Promise.all([
+        page.click('input[type="submit"]'),
+        page.waitForURL(baseUrl + '/catalog')
+    ]);
+
+    await page.click('a[href="/create"]');
+    await page.waitForSelector('#create-form');
+
+    await page.fill('#title', 'Test Book');
+    await page.fill('#description', 'This is a test book description');
+    await page.fill('#image', 'https://example.com/book-image.jpg');
+    await page.selectOption('#type', 'Fiction');
+    await page.click('#create-form input[type="submit"]');
+
+    await page.waitForURL(baseUrl + '/catalog');
+
+    expect(page.url()).toBe(baseUrl + '/catalog');
+});
+
