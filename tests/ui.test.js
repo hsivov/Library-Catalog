@@ -196,3 +196,37 @@ test('Add book with correct data', async ({ page }) => {
     expect(page.url()).toBe(baseUrl + '/catalog');
 });
 
+test('Login and verify all books are displayed', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+    await login(page);
+
+    await Promise.all([
+        page.click('input[type="submit"]'),
+        page.waitForURL(baseUrl + '/catalog')
+    ]);
+
+    await page.waitForSelector('.dashboard');
+
+    const bookElement = await page.$$('.other-books-list li');
+
+    expect(bookElement.length).toBeGreaterThan(0);
+});
+
+test('Verify that no books are displayed', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+    await page.fill('#email', 'hsivov@gmail.com');
+    await page.fill('#password', '1234');
+
+    await Promise.all([
+        page.click('input[type="submit"]'),
+        page.waitForURL(baseUrl + '/catalog')
+    ]);
+
+    await page.click('a[href="/profile"]');
+
+    await page.waitForSelector('.my-books');
+
+    const noBooksMessage = await page.textContent('.no-books');
+
+    expect(noBooksMessage).toBe('No books in database!');
+});
