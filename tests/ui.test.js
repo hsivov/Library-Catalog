@@ -214,8 +214,8 @@ test('Login and verify all books are displayed', async ({ page }) => {
 
 test('Verify that no books are displayed', async ({ page }) => {
     await page.goto(baseUrl + '/login');
-    await page.fill('#email', 'hsivov@gmail.com');
-    await page.fill('#password', '1234');
+    await page.fill('#email', 'test@email.com');
+    await page.fill('#password', '12345');
 
     await Promise.all([
         page.click('input[type="submit"]'),
@@ -251,7 +251,7 @@ test('Login and navigate to Details page', async ({ page }) => {
     expect(detailsPageTitle).toBe('Test Book');
 });
 
-test.only('Verify redirection of Logout link', async ({ page }) => {
+test('Verify redirection of Logout link', async ({ page }) => {
     await page.goto(baseUrl + '/login');
 
     await login(page);
