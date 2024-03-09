@@ -5,7 +5,9 @@
     "main": "index.html",
     "scripts": {
         "test": "mocha tests",
-        "start": "http-server -a localhost -p 3000 -P http://localhost:3000? -c-1"
+        "frontend": "http-server -a localhost -p 3000 -P http://localhost:3000? -c-1",
+        "backend": "cd server && node server.js",
+        "test-ui" : "npx playwright test tests/ui.test.js"
     },
     "author": "",
     "license": "ISC",
