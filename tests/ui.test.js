@@ -230,3 +230,36 @@ test('Verify that no books are displayed', async ({ page }) => {
 
     expect(noBooksMessage).toBe('No books in database!');
 });
+
+test('Login and navigate to Details page', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+
+    await login(page);
+
+    await Promise.all([
+        page.click('input[type="submit"]'),
+        page.waitForURL(baseUrl + '/catalog')
+    ]);
+
+    await page.click('a[href="/catalog"]');
+    await page.waitForSelector('.otherBooks');
+
+    await page.click('.otherBooks a.button');
+    await page.waitForSelector('.book-information');
+
+    const detailsPageTitle = await page.textContent('.book-information h3');
+    expect(detailsPageTitle).toBe('Test Book');
+});
+
+test.only('Verify redirection of Logout link', async ({ page }) => {
+    await page.goto(baseUrl + '/login');
+
+    await login(page);
+    await page.click('input[type="submit"]');
+
+    const logoutLink = await page.$('a[href="javascript:void(0)"]');
+    await logoutLink.click();
+
+    const redirectedURL = page.url();
+    expect(redirectedURL).toBe(baseUrl + '/catalog');
+});
