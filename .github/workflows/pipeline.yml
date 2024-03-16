@@ -20,10 +20,8 @@ jobs:
         run: npm install
       - name: Install Playwright
         run: npx playwright install
-      - name: Run frontend service
-        run: npm run frontend
-      - name: Run backend service
-        run: npm run backend
+      - name: Run frontend and backend services
+        run: npm run frontend && npm run backend
       - name: Run integration tests
         run: npm run test-ui
 
