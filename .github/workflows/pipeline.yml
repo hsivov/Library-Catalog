@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,20 +18,34 @@ jobs:
           node-version: 20.x
       - name: Install dependencies
         run: npm install
+
       - name: Install Playwright
         run: npx playwright install
-      - name: Run frontend and backend services
-        run: npm run frontend && npm run backend
+      - name: Run Frontend
+        run: npm run frontend &
+      - name: Run Backend
+        run: npm run backend &
       - name: Run integration tests
         run: npm run test-ui
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+  # deploy-be:
+  #   needs: build_and_tests
+  #   runs-on: ubuntu-latest
     
-    steps:
-      - name: Deploy to production
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_TOKEN }}
+  #   steps:
+  #     - name: Deploy to production
+  #       uses: johnbeynon/render-deploy-action@v0.0.8
+  #       with:
+  #         service-id: ${{ secrets.SERVICE_BE_ID }}
+  #         api-key: ${{ secrets.RENDER_TOKEN }}
+
+  # deploy-fe:
+  #   needs: deploy-be
+  #   runs-on: ubuntu-latest
+    
+  #   steps:
+  #     - name: Deploy to production
+  #       uses: johnbeynon/render-deploy-action@v0.0.8
+  #       with:
+  #         service-id: ${{ secrets.SERVICE_FE_ID }}
+  #         api-key: ${{ secrets.RENDER_TOKEN }}
