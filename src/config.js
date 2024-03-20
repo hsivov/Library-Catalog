@@ -1,0 +1,1 @@
+export const settings = { host: "https://library-catalog-gk3u.onrender.com" };
